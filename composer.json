@@ -1,0 +1,23 @@
+{
+    "name" : "popsugar/php-yesmail-api",
+    "description" : "PHP implementation of the Yesmail v1 API",
+    "keywords" : ["yesmail"],
+    "homepage" : "https://github.com/PopSugar/php-yesmail-api",
+    "type" : "library",
+    "license" : "MIT",
+    "authors" : [
+        {
+            "name" : "POPSUGAR Inc.",
+            "homepage" : "http://corp.popsugar.com"
+        }
+    ],
+    "autoload" : { 
+        "psr-0" : {
+            "Yesmail" : "src/"
+        }
+    },
+    "require" : {
+        "php" : ">=5.4.0",
+        "guzzle/guzzle" : "~3.7" 
+    }
+}
