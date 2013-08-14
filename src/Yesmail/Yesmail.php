@@ -187,9 +187,62 @@ class Yesmail {
      * @access public
      */
     public function Master_Get($masterId) {
+        $ret = false;
+
         if (is_int($masterId) === true) {
             $ret = $this->_call_api('get', "{$this->_url}/masters/$masterId", array());
         }
+
+        return $ret;
+    }
+
+    /**
+     * Get the assets that belong to a Master
+     *
+     * @param int $masterId The id of the master who's assets are being requested
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Master_Assets_Get($masterId) {
+        $ret = false;
+
+        if (is_int($masterId) === true) {
+            $ret = $this->_call_api('get', "{$this->_url}/masters/$masterId/assets", array());
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Add new asset(s) to a Master
+     *
+     * @param int $masterId The id of the master to add the asset(s) to
+     * @param string $assetName Valid file extensions are: .txt, .html, .htm, .gif, .jpg, .png, or .zip
+     * @param string $assetBase64Data Should be a base-64 encoded string of the content or archive (zip file) being uploaded.
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Master_Asset_Add($masterId, $assetName, $assetBase64Data) {
+        $ret = false;
+
+        if (is_int($masterId) === true && is_string($assetName) === true && is_string($assetBase64Data) === true) {
+            $data = array('assetName' => $assetName , 'assetBase64Data' => $assetBase64Data);
+            $ret = $this->_call_api('post', "{$this->_url}/masters/$masterId/assets", $data);
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Delete an asset from a Master
+     *
+     * @param int $masterId The id of the master to delete the asset from
+     * @param string $assetName The name of the asset to delete
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Master_Asset_Delete($masterId, $assetName) {
+        $ret = $this->_call_api('delete', "{$this->_url}/masters/$masterId/assets/$assetName", array());
 
         return $ret;
     }
