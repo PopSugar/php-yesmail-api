@@ -197,6 +197,41 @@ class Yesmail {
     }
 
     /**
+     * Get an existing Master by name
+     *
+     * @param int $masterName The name of the master to retrieve
+     * @return mixed A JSON decoded PHP variable representing the HTTP response, or false if the master is not found
+     * @access public
+     */
+    public function Master_Get_By_Name($masterName) {
+        $ret = false;
+
+        if (is_string($masterName) === true) {
+            $pageSize = 50;
+            $begin = 1;
+            $end = $pageSize;
+            $filter = 'active';
+            $more = true;
+            while($more) {
+                $res = $this->_call_api('get', "{$this->_url}/masters", array('begin' => $begin, 'end' => $end,
+                                                                              'filter' => $filter));
+                foreach($res->masters as $result) {
+                    if ($result->masterName === $masterName) {
+                        $ret = $result;
+                        break;
+                    }
+                }
+
+                $more = ($ret === false && count($res->masters) === $pageSize ? true : false);
+                $begin += $pageSize;
+                $end += $pageSize;
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
      * Get the assets that belong to a Master
      *
      * @param int $masterId The id of the master who's assets are being requested
