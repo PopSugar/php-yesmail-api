@@ -532,8 +532,8 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     }
 
     protected function _getTestMasterAssetAddRequestAcceptedData() {
-            $ret = array ('info' => array('http_code' => 202),
-                          'response' => '{
+        $ret = array ('info' => array('http_code' => 202),
+                      'response' => '{
                                         "trackingId" : "11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
                                         "statusCode" : "SUBMITTED",
                                         "statusMessage" : "Task has been accepted for processing",
@@ -542,7 +542,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
                                         "statusNoWaitURI" : "https://API/statusNoWait/11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
                                         "finalResourceURIs" : []
                                     }'
-            );
+        );
 
         return $ret;
     }
@@ -647,6 +647,83 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $masterId = 123;
         $assetName = "index.html";
         $yesmail->Master_Asset_Delete($masterId, $assetName);
+    }
+
+    public function testMasterGetByNameFound() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
+        $mockData = $this->_getTestMasterGetByNameFoundData();
+        $client->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+        $yesmail = new Yesmail($client);
+        $masterName = 'Message 1';
+        $ret = $yesmail->Master_Get_By_Name($masterName);
+        $this->assertInstanceOf('stdClass', $ret);
+        $this->assertEquals($masterName, $ret->masterName);
+    }
+
+    protected function _getTestMasterGetByNameFoundData() {
+        $ret = array ('info' => array('http_code' => 200),
+                      'response' => '{
+                                        "masters" : [
+                                            {
+                                                "masterURI" : "https://API/masters/1018984",
+                                                "masterId" : "1018984",
+                                                "masterName" : "Message 1",
+                                                "campaignId" : ""
+                                            },
+                                            {
+                                                "masterURI" : "https://API/masters/1018983",
+                                                "masterId" : "1018983",
+                                                "masterName" : "Message 2",
+                                                "campaignId" : ""
+                                            }
+                                        ]
+                                     }'
+        );
+
+        return $ret;
+    }
+
+    public function testMasterGetByNameNotFound() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
+        $mockData = $this->_getTestMasterGetByNameNotFoundData();
+        $client->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+        $yesmail = new Yesmail($client);
+        $masterName = 'Message 3';
+        $ret = $yesmail->Master_Get_By_Name($masterName);
+        $this->assertFalse($ret);
+    }
+
+    protected function _getTestMasterGetByNameNotFoundData() {
+        $ret = array ('info' => array('http_code' => 200),
+                      'response' => '{
+                                        "masters" : [
+                                            {
+                                                "masterURI" : "https://API/masters/1018984",
+                                                "masterId" : "1018984",
+                                                "masterName" : "Message 1",
+                                                "campaignId" : ""
+                                            },
+                                            {
+                                                "masterURI" : "https://API/masters/1018983",
+                                                "masterId" : "1018983",
+                                                "masterName" : "Message 2",
+                                                "campaignId" : ""
+                                            }
+                                        ]
+                                     }'
+        );
+
+        return $ret;
     }
 
     public function testListManagementGetListsSuccessful() {
