@@ -44,7 +44,14 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSubscriberCreateRequestMalformed() {
-        $this->markTestIncomplete();
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 400)));
+        $yesmail = new Yesmail($client);
+        $division = self::SHOPSTYLE_DIVISION;
+        $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
     }
 
     public function testSubscriberCreateAuthenticationFailed() {
@@ -78,15 +85,14 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSubscriberCreateResourceNotFound() {
-        $this->markTestIncomplete();
-    }
-
-    public function testSubscriberCreateInternalServerError() {
-        $this->markTestIncomplete();
-    }
-
-    public function testSubscriberCreateServiceTemporarilyUnavailable() {
-        $this->markTestIncomplete();
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client);
+        $division = self::SHOPSTYLE_DIVISION;
+        $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
     }
 
     public function testSubscriberLookupRequestSuccessful() {
@@ -147,14 +153,6 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         return $ret;
     }
 
-    public function testSubscriberLookupInternalServerError() {
-        $this->markTestIncomplete();
-    }
-
-    public function testSubscriberLookupServiceTemporarilyUnavailable() {
-        $this->markTestIncomplete();
-    }
-
     public function testSubscriberUnsubscribeRequestAccepted() {
         $client = $this->getMock('\Yesmail\CurlClient', array('delete', 'get_info'), array('', ''));
         $mockData = $this->_getTestSubscriberUnsubscribeRequestAcceptedData();
@@ -190,7 +188,6 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSubscriberUnsubscribeRequestMalformed() {
-//        $this->markTestIncomplete();
         $this->setExpectedException('Exception');
         $client = $this->getMock('\Yesmail\CurlClient', array('delete', 'get_info'), array('', ''));
         $mockData = $this->_getTestSubscriberUnsubscribeRequestMalformedData();
@@ -251,15 +248,14 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testSubscriberUnsubscribeResourceNotFound() {
-        $this->markTestIncomplete();
-    }
-
-    public function testSubscriberUnsubscribeInternalServerError() {
-        $this->markTestIncomplete();
-    }
-
-    public function testSubscriberUnsubscribeServiceTemporarilyUnavailable() {
-        $this->markTestIncomplete();
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client);
+        $division = self::SHOPSTYLE_DIVISION;
+        $yesmail->Subscriber_Unsubscribe(-1, $division);
     }
 
     // 200
@@ -322,16 +318,6 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
         $yesmail = new Yesmail($client);
         $ret = $yesmail->Status_Get('an-invalid-tracking-id');
-    }
-
-    // 500
-    public function testStatusGetInternalServerError() {
-        $this->markTestIncomplete();
-    }
-
-    // 503
-    public function testStatusGetServiceTemporarilyUnavailable() {
-        $this->markTestIncomplete();
     }
 
     public function testMasterCreateEnvelopeNotInstanceOfYesmailMasterEnvelope() {
@@ -465,6 +451,202 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         );
 
         return $ret;
+    }
+
+    public function testMasterAssetsGetSuccessful() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
+        $mockData = $this->_getTestMasterAssetsGetSuccessfulData();
+        $client->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+        $yesmail = new Yesmail($client);
+
+        $masterId = 123;
+        $ret = $yesmail->Master_Assets_Get($masterId);
+        $this->assertEquals($ret, json_decode($mockData['response']));
+
+    }
+
+    protected function _getTestMasterAssetsGetSuccessfulData() {
+        $ret = array ('info' => array('http_code' => 200),
+                      'response' => '{
+                                        "assets" : [
+                                            "https://API/masters/1018979/assets/html",
+                                            "https://API/masters/1018979/assets/text"
+                                        ]
+                                    }'
+        );
+
+        return $ret;
+    }
+
+    public function testMasterAssetsGetRequestMalformed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 400)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $yesmail->Master_Assets_Get($masterId);
+    }
+
+    public function testMasterAssetsGetAuthenticationFailed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $yesmail->Master_Assets_Get($masterId);
+    }
+
+    public function testMasterAssetsGetResourceNotFound() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $yesmail->Master_Assets_Get($masterId);
+    }
+
+    public function testMasterAssetAddRequestAccepted() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('post', 'get_info'), array('', ''));
+        $mockData = $this->_getTestMasterAssetAddRequestAcceptedData();
+        $client->expects($this->any())
+            ->method('post')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $assetName = 'index.html';
+        $assetBase64 = base64_encode('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><title>title</title></head><body>test</body></html>');
+        $ret = $yesmail->Master_Asset_Add($masterId, $assetName, $assetBase64);
+
+        $this->assertEquals($ret, json_decode($mockData['response']));
+    }
+
+    protected function _getTestMasterAssetAddRequestAcceptedData() {
+            $ret = array ('info' => array('http_code' => 202),
+                          'response' => '{
+                                        "trackingId" : "11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
+                                        "statusCode" : "SUBMITTED",
+                                        "statusMessage" : "Task has been accepted for processing",
+                                        "lastUpdateTime" : "2013-07-26T22:08:33.450Z",
+                                        "statusURI" : "https://API/status/11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
+                                        "statusNoWaitURI" : "https://API/statusNoWait/11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
+                                        "finalResourceURIs" : []
+                                    }'
+            );
+
+        return $ret;
+    }
+
+    public function testMasterAssetAddRequestMalformed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 400)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $assetName = 'index.html';
+        $assetBase64 = base64_encode('not-html');
+        $yesmail->Master_Asset_Add($masterId, $assetName, $assetBase64);
+    }
+
+    public function testMasterAssetAddAuthenticationFailed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $assetName = 'index.html';
+        $assetBase64 = base64_encode('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><title>title</title></head><body>test</body></html>');
+        $yesmail->Master_Asset_Add($masterId, $assetName, $assetBase64);
+    }
+
+    public function testMasterAssetAddResourceNotFound() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $assetName = 'index.html';
+        $assetBase64 = base64_encode('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><title>title</title></head><body>test</body></html>');
+        $yesmail->Master_Asset_Add($masterId, $assetName, $assetBase64);
+    }
+
+    public function testMasterAssetDeleteRequestAccepted() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('delete', 'get_info'), array('', ''));
+        $mockData = $this->_getTestMasterAssetDeleteRequestAcceptedData();
+        $client->expects($this->any())
+            ->method('delete')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $assetName = "index.html";
+        $ret = $yesmail->Master_Asset_Delete($masterId, $assetName);
+        $this->assertEquals($ret, json_decode($mockData['response']));
+    }
+
+    protected function _getTestMasterAssetDeleteRequestAcceptedData() {
+        $ret = array ('info' => array('http_code' => 202),
+                      'response' => '{
+                                        "trackingId" : "11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
+                                        "statusCode" : "SUBMITTED",
+                                        "statusMessage" : "Task has been accepted for processing",
+                                        "lastUpdateTime" : "2013-07-26T22:08:33.450Z",
+                                        "statusURI" : "https://API/status/11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
+                                        "statusNoWaitURI" : "https://API/statusNoWait/11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
+                                        "finalResourceURIs" : []
+                                    }'
+        );
+
+        return $ret;
+    }
+
+    public function testMasterAssetDeleteRequestMalformed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 400)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $assetName = "index.html";
+        $yesmail->Master_Asset_Delete($masterId, $assetName);
+    }
+
+    public function testMasterAssetDeleteAuthenticationFailed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $assetName = "index.html";
+        $yesmail->Master_Asset_Delete($masterId, $assetName);
+    }
+
+    public function testMasterAssetDeleteResourceNotFound() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $assetName = "index.html";
+        $yesmail->Master_Asset_Delete($masterId, $assetName);
     }
 
     public function testListManagementGetListsSuccessful() {
