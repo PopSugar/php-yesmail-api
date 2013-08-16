@@ -2,7 +2,7 @@
 namespace Yesmail;
 
 class YesmailTest extends \PHPUnit_Framework_TestCase {
-    const SHOPSTYLE_DIVISION = 'ShopStyle US';
+    const DIVISION = 'Test Division';
 
     public function testCreateYesmail() {
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
@@ -21,7 +21,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->will($this->returnValue($mockData['info']));
         $yesmail = new Yesmail($client);
 
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
 
         $this->assertEquals($ret, json_decode($mockData['response']));
@@ -50,7 +50,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 400)));
         $yesmail = new Yesmail($client);
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
     }
 
@@ -67,7 +67,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
 
         $yesmail = new Yesmail($client);
 
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
 
         $this->assertEquals($ret, json_decode($mockData['response']));
@@ -91,7 +91,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
         $yesmail = new Yesmail($client);
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
     }
 
@@ -107,7 +107,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
 
         $yesmail = new Yesmail($client);
 
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Lookup(array('email' => 'cpowell@popsugar.com'));
 
         $this->assertEquals($ret, json_decode($mockData['response']));
@@ -136,7 +136,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
 
         $yesmail = new Yesmail($client);
 
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Lookup(array('email' => 'junk'));
 
         $this->assertEquals($ret, json_decode($mockData['response']));
@@ -165,7 +165,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
 
         $yesmail = new Yesmail($client);
 
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Unsubscribe(-1, $division);
 
         $this->assertEquals($ret, json_decode($mockData['response']));
@@ -200,7 +200,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
 
         $yesmail = new Yesmail($client);
 
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Unsubscribe(-10000000000, $division);
 
         $this->assertEquals($ret, json_decode($mockData['response']));
@@ -230,7 +230,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
 
         $yesmail = new Yesmail($client);
 
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Unsubscribe(-1, $division);
 
         $this->assertEquals($ret, json_decode($mockData['response']));
@@ -254,7 +254,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
         $yesmail = new Yesmail($client);
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $yesmail->Subscriber_Unsubscribe(-1, $division);
     }
 
@@ -355,9 +355,9 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->will($this->returnValue($mockData['info']));
         $yesmail = new Yesmail($client);
         $masterName = 'Test Master';
-        $fromName = 'shopstyle';
-        $fromDomain = 'shopstyle.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $fromName = 'from-name';
+        $fromDomain = 'from-domain.com';
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $envelope = new YesmailMasterEnvelope($masterName, $fromName, $fromDomain, $division, $encoding, $subject);
@@ -405,12 +405,12 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
                                             "masterName" : "Test",
                                             "description" : "",
                                             "campaign" : "",
-                                            "division" : "ShopStyle US",
+                                            "division" : "Test Division",
                                             "encoding" : "UTF-8",
                                             "subject" : "",
                                             "friendlyFrom" : "POPSUGAR",
-                                            "fromName" : "shopstyle",
-                                            "fromDomain" : "e-mail.popsugar.com",
+                                            "fromName" : "from-name",
+                                            "fromDomain" : "from-domain.com",
                                             "deliveryType":"AUTODETECT",
                                             "keywords" : {
                                                 "keywords" : [
