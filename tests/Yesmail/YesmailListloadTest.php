@@ -1,10 +1,10 @@
 <?php
 namespace Yesmail;
 class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
-    const SHOPSTYLE_DIVISION = 'ShopStyle US';
+    const DIVISION = 'Test Division';
 
     public function testCreateYesmailListload() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;
@@ -19,7 +19,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testYesmailListloadJson() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;
@@ -30,12 +30,12 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
         $errorType = 'ABSOLUTE';
         $listload = new YesmailListload($division, $datafileURI, $subscribe, $profileUpdate, $listLoadName, $loadMode,
                                             $headers, $maxErrors, $errorType);
-        $json = '{"division":"ShopStyle US","datafileURI":"datafile.csv","subscribe":true,"profileUpdate":false,"listLoadName":"Test Listload","options":{"loadMode":"INSERT_ONLY","headers":false,"maxErrors":100,"errorType":"ABSOLUTE"}}';
+        $json = '{"division":"Test Division","datafileURI":"datafile.csv","subscribe":true,"profileUpdate":false,"listLoadName":"Test Listload","options":{"loadMode":"INSERT_ONLY","headers":false,"maxErrors":100,"errorType":"ABSOLUTE"}}';
         $this->assertEquals($json, json_encode($listload));
     }
 
     public function testListloadValid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;
@@ -65,7 +65,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadDatafileURIInvalid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = NULL;
         $subscribe = true;
         $profileUpdate = false;
@@ -80,7 +80,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadSubscribeInvalid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = NULL;
         $profileUpdate = false;
@@ -95,7 +95,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadProfileUpdateInvalid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = NULL;
@@ -110,7 +110,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadListLoadNameInvalid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;
@@ -125,7 +125,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadLoadModeInvalid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;
@@ -140,7 +140,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadHeadersInvalid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;
@@ -155,7 +155,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadMaxErrorsLowerBoundValid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;
@@ -170,7 +170,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadMaxErrorsLowerBoundInvalid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;
@@ -185,7 +185,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadMaxErrorsInvalid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;
@@ -200,7 +200,7 @@ class YesmailListloadTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testListloadErrorTypeInvalid() {
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $datafileURI = 'datafile.csv';
         $subscribe = true;
         $profileUpdate = false;

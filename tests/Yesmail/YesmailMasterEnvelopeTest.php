@@ -1,16 +1,16 @@
 <?php
 namespace Yesmail;
 class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
-    const SHOPSTYLE_DIVISION = 'ShopStyle US';
+    const DIVISION = 'Test Division';
 
     public function testCreateYesmailMasterEnvelope() {
-        $envelope = new YesmailMasterEnvelope("Test Master", "POPSUGAR", "popsugar.com", "ShopStyle US", "UTF-8", "");
+        $envelope = new YesmailMasterEnvelope("Test Master", "POPSUGAR", "popsugar.com", "Test Division", "UTF-8", "");
         $this->assertInstanceOf('\Yesmail\YesmailMasterEnvelope', $envelope);
     }
 
     public function testYesmailMasterEnvelopeJson() {
-        $envelope = new YesmailMasterEnvelope("Test Master", "POPSUGAR", "popsugar.com", "ShopStyle US", "UTF-8", "");
-        $json = '{"masterName":"Test Master","fromName":"POPSUGAR","fromDomain":"popsugar.com","division":"ShopStyle US","encoding":"UTF-8","subject":"","deliveryType":"AUTODETECT","friendlyFrom":"","description":"","campaign":""}';
+        $envelope = new YesmailMasterEnvelope("Test Master", "POPSUGAR", "popsugar.com", "Test Division", "UTF-8", "");
+        $json = '{"masterName":"Test Master","fromName":"POPSUGAR","fromDomain":"popsugar.com","division":"Test Division","encoding":"UTF-8","subject":"","deliveryType":"AUTODETECT","friendlyFrom":"","description":"","campaign":""}';
         $this->assertEquals($json, json_encode($envelope));
     }
 
@@ -18,7 +18,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $envelope = new YesmailMasterEnvelope($masterName, $fromName, $fromDomain, $division, $encoding, $subject);
@@ -29,7 +29,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $deliveryType = 'AUTODETECT';
@@ -47,7 +47,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = NULL;
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $envelope = new YesmailMasterEnvelope($masterName, $fromName, $fromDomain, $division, $encoding, $subject);
@@ -58,7 +58,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = NULL;
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $envelope = new YesmailMasterEnvelope($masterName, $fromName, $fromDomain, $division, $encoding, $subject);
@@ -69,7 +69,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = NULL;
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $envelope = new YesmailMasterEnvelope($masterName, $fromName, $fromDomain, $division, $encoding, $subject);
@@ -91,7 +91,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'unknown-encoding';
         $subject = 'Test Subject';
         $envelope = new YesmailMasterEnvelope($masterName, $fromName, $fromDomain, $division, $encoding, $subject);
@@ -102,7 +102,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = NULL;
         $envelope = new YesmailMasterEnvelope($masterName, $fromName, $fromDomain, $division, $encoding, $subject);
@@ -113,7 +113,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $deliveryType = NULL;
@@ -131,7 +131,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $deliveryType = 'AUTODETECT';
@@ -149,7 +149,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $deliveryType = 'AUTODETECT';
@@ -167,7 +167,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $deliveryType = 'AUTODETECT';
@@ -185,7 +185,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $deliveryType = 'AUTODETECT';
@@ -204,7 +204,7 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
         $masterName = 'Test Master';
         $fromName = 'POPSUGAR';
         $fromDomain = 'popsugar.com';
-        $division = self::SHOPSTYLE_DIVISION;
+        $division = self::DIVISION;
         $encoding = 'UTF-8';
         $subject = 'Test Subject';
         $deliveryType = 'AUTODETECT';
