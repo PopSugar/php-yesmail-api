@@ -64,28 +64,45 @@ class Yesmail {
      * @access public
      */
     public function Subscriber_Create($subscription_state, $division, $attributes) {
-        $data = new \stdClass();
-
-        if(is_null($subscription_state) === false) {
-            $data->subscriptionState = $subscription_state;
-        }
-
-        if(is_null($division) === false) {
-            $data->division = new \stdClass();
-            $data->division->value = $division;
-        }
-
-        $data->attributes = new \stdClass();
-        $data->attributes->attributes = array();
-
-        foreach($attributes as $key => $value) {
-            $attribute = new \stdClass();
-            $attribute->name = $key;
-            $attribute->value = $value;
-            $data->attributes->attributes[] = $attribute;
-        }
-
+        $data = $this->_package_subscriber_elements($subscription_state, $division, $attributes);
         $ret = $this->_call_api('post', "{$this->_url}/subscribers", $data);
+
+        return $ret;
+    }
+
+    /**
+     * Update an existing subscriber.
+     *
+     * @param int $user_id The id of the subscriber to update
+     * @param mixed $subscription_state [optional] Any of {"UNSUBSCRIBED", "SUBSCRIBED", "REFERRED", "DEAD", "REVIVED"}
+     * @param mixed $division [optional] The division display name. If this is specified the subscriber will be
+     *                                     subscribed to this division.
+     * @param array $attributes Valid attributes in the payload include any subscriber attributes defined for this
+     *                          company. In order to create a subscriber, all of the attributes which comprise the
+     *                          unique subscriber key for the company are required, and a valid value must be provided
+     *                          for each required attribute. Attributes which are not in the unique key are optional.
+     *                          NOTE: emailFormat, aka emailProgram, is an optional setting, but if it is not set, then
+     *                          when editing the user in the UI it will default to TEXT.
+     * @param bool $allow_resubscribe [optional] Flag to explicitly indicate you wish to resubscribe a subscriber. allowResubscribe
+     *                          must be set to true when transitioning from an UNSUBSCRIBED to SUBSCRIBED state.
+     * @param bool $append [optional] If true all multi-value attributes get updated like an append or merge, if false
+     *                          (the default) all are replaced
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Subscriber_Update($user_id, $subscription_state, $division, $attributes, $allow_resubscribe = true,
+                                      $append = false) {
+        $data = $this->_package_subscriber_elements($subscription_state, $division, $attributes);
+
+        if (is_null($allow_resubscribe) === false) {
+            $data->allowResubscribe = $allow_resubscribe;
+        }
+
+        if (is_null($append) === false) {
+            $data->append = $append;
+        }
+
+        $ret = $this->_call_api('put', "{$this->_url}/subscribers/$user_id", $data);
 
         return $ret;
     }
@@ -382,6 +399,32 @@ class Yesmail {
 
         return $ret;
     }
+
+    protected function _package_subscriber_elements($subscription_state, $division, $attributes) {
+        $data = new \stdClass();
+
+        if (is_null($subscription_state) === false) {
+            $data->subscriptionState = $subscription_state;
+        }
+
+        if (is_null($division) === false) {
+            $data->division = new \stdClass();
+            $data->division->value = $division;
+        }
+
+        $data->attributes = new \stdClass();
+        $data->attributes->attributes = array();
+
+        foreach($attributes as $key => $value) {
+            $attribute = new \stdClass();
+            $attribute->name = $key;
+            $attribute->value = $value;
+            $data->attributes->attributes[] = $attribute;
+        }
+
+        return $data;
+    }
+
     /**
      * Make a call to the Yesmail API
      *

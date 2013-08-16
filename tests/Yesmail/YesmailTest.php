@@ -95,6 +95,83 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
     }
 
+    public function testSubscriberUpdateRequestAccepted() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('put', 'get_info'), array('', ''));
+        $mockData = $this->_getTestSubscriberUpdateRequestAcceptedData();
+        $client->expects($this->any())
+            ->method('put')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+        $yesmail = new Yesmail($client);
+
+        $user_id = 123;
+        $division = self::DIVISION;
+        $allow_resubscribe = true;
+        $append = true;
+        $ret = $yesmail->Subscriber_Update($user_id, 'SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'),
+            $allow_resubscribe, $append);
+        $this->assertEquals($ret, json_decode($mockData['response']));
+    }
+
+    protected function _getTestSubscriberUpdateRequestAcceptedData() {
+        $ret = array ('info' => array('http_code' => 202),
+                      'response' => '{
+                                        "trackingId" : "11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
+                                        "statusCode" : "SUBMITTED",
+                                        "statusMessage" : "Task has been accepted for processing",
+                                        "lastUpdateTime" : "2013-07-26T22:08:33.450Z",
+                                        "statusURI" : "https://API/status/11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
+                                        "statusNoWaitURI" : "https://API/statusNoWait/11e7e380-8a8b-4487-91b3-a9f42e9eda5b",
+                                        "finalResourceURIs" : []
+                                    }'
+        );
+
+        return $ret;
+    }
+
+    public function testSubscriberUpdateRequestMalformed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 400)));
+        $yesmail = new Yesmail($client);
+        $user_id = 123;
+        $division = self::DIVISION;
+        $allow_resubscribe = true;
+        $append = true;
+        $yesmail->Subscriber_Update($user_id, 'SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'),
+            $allow_resubscribe, $append);
+    }
+
+    public function testSubscriberUpdateAuthenticationFailed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
+        $yesmail = new Yesmail($client);
+        $user_id = 123;
+        $division = self::DIVISION;
+        $allow_resubscribe = true;
+        $append = true;
+        $yesmail->Subscriber_Update($user_id, 'SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'),
+            $allow_resubscribe, $append);
+    }
+
+    public function testSubscriberUpdateResourceNotFound() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client);$user_id = 123;
+        $division = self::DIVISION;
+        $allow_resubscribe = true;
+        $append = true;
+        $yesmail->Subscriber_Update($user_id, 'SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'),
+            $allow_resubscribe, $append);
+    }
+
     public function testSubscriberLookupRequestSuccessful() {
         $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
         $mockData = $this->_getTestSubscriberLookupRequestSuccessfulData();
