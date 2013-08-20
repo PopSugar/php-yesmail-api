@@ -197,6 +197,33 @@ class Yesmail {
     }
 
     /**
+     * Update the status of an existing Master
+     *
+     * @param int $masterId The id of the master who's status to update
+     * @param string $status Either ENABLED or DISABLED.
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Master_Status_Update($masterId, $status) {
+        $ret = $this->_call_api('put', "{$this->_url}/masters/$masterId/status", array('status' => $status));
+
+        return $ret;
+    }
+
+    /**
+     * Get the status of an existing Master
+     *
+     * @param int $masterId The id of the master who's status to get
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Master_Status_Get($masterId) {
+        $ret = $this->_call_api('get', "{$this->_url}/masters/$masterId/status", array());
+
+        return $ret;
+    }
+
+    /**
      * Get an existing Master
      *
      * @param int $masterId The id of the master to retrieve
@@ -207,7 +234,15 @@ class Yesmail {
         $ret = false;
 
         if (is_int($masterId) === true) {
-            $ret = $this->_call_api('get', "{$this->_url}/masters/$masterId", array());
+            try {
+                $ret = $this->_call_api('get', "{$this->_url}/masters/$masterId", array());
+            } catch (\Exception $e) {
+                if( $e->getCode() === 404){
+                    $ret = false;
+                } else {
+                    throw $e;
+                }
+            }
         }
 
         return $ret;
@@ -236,6 +271,7 @@ class Yesmail {
                     if ($result->masterName === $masterName) {
                         $ret = $result;
                         break;
+
                     }
                 }
 
@@ -245,7 +281,36 @@ class Yesmail {
             }
         }
 
+        if ($ret !== false) {
+            $ret = $this->Master_Get((int)$ret->masterId);
+        }
+
+        $ret = $this->_Type_Safe_Yesmail_Master($ret);
+
         return $ret;
+    }
+
+    protected function _Type_Safe_Yesmail_Master($master) {
+        if ($master !== false) {
+            $master->scheduling->maxRecipients = (int)$master->scheduling->maxRecipients;
+            $master->scheduling->priority = (int)$master->scheduling->priority;
+            $master->scheduling->compileBeforeDeliveryStart = (bool)$master->scheduling->compileBeforeDeliveryStart;
+            $master->scheduling->allowMultipleDeliveries = (bool)$master->scheduling->allowMultipleDeliveries;
+            $master->scheduling->deliverImmediately = (bool)$master->scheduling->deliverImmediately;
+            $master->scheduling->obeyDeliveryLimits = (bool)$master->scheduling->obeyDeliveryLimits;
+            $master->scheduling->repeatsUntilDisabled = (bool)$master->scheduling->repeatsUntilDisabled;
+
+            foreach($master->targeting->requiredTargetAttributes->requiredTargetAttributes as &$requiredTargetAttribute) {
+                $requiredTargetAttribute->nullable = (bool)$requiredTargetAttribute->nullable;
+            }
+
+            foreach($master->targeting->targetAttributes as $targetAttribute) {
+                $targetAttribute->id = (int)$targetAttribute->id;
+                $targetAttribute->negation = (bool)$targetAttribute->negation;
+            }
+        }
+
+        return $master;
     }
 
     /**
@@ -457,7 +522,7 @@ class Yesmail {
                     throw new ServiceTemporarilyUnavailableException();
                     */
                 default:
-                    throw new \Exception("Error: {$info['http_code']}");
+                    throw new \Exception("Error: {$info['http_code']}", $info['http_code']);
             }
         }
 

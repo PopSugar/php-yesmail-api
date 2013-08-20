@@ -11,7 +11,7 @@ class YesmailMasterTargetingTest extends \PHPUnit_Framework_TestCase {
         $requiredAttribute = new YesmailMasterRequiredTargetAttribute("name", array("value1"), false);
         $attribute = new YesmailMasterTargetAttribute("name", array("value1"), false, 1, 'AND', false, '');
         $targeting = new YesmailMasterTargeting(array($requiredAttribute), array($attribute));
-        $json = '{"requiredTargetAttributes":[{"name":"name","values":["value1"],"nullable":false}],"targetAttributes":[{"name":"name","values":["value1"],"nullable":false,"id":1,"logicalConnectorWithNext":"AND","negation":false,"groupedWith":""}]}';
+        $json = '{"requiredTargetAttributes":{"requiredTargetAttributes":[{"name":"name","values":{"values":["value1"]},"nullable":false}]},"targetAttributes":[{"name":"name","values":{"values":["value1"]},"nullable":false,"id":1,"logicalConnectorWithNext":"AND","negation":false,"groupedWith":""}]}';
         $this->assertEquals($json, json_encode($targeting));
     }
 

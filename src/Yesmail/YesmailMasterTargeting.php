@@ -60,7 +60,9 @@ class YesmailMasterTargeting implements \JsonSerializable {
      */
     public function jsonSerialize() {
         $ret = new \stdClass();
-        $ret->requiredTargetAttributes = $this->requiredTargetAttributes;
+        $requiredTargetAttributes = array();
+        $requiredTargetAttributes['requiredTargetAttributes'] = $this->requiredTargetAttributes;
+        $ret->requiredTargetAttributes = $requiredTargetAttributes;
         $ret->targetAttributes = $this->targetAttributes;
 
         return $ret;

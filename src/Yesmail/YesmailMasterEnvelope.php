@@ -74,6 +74,7 @@ class YesmailMasterEnvelope implements \JsonSerializable {
         $this->description = (is_string($description) === true ? $description : NULL);
         $this->campaign = (is_string($campaign) === true ? $campaign : NULL);
 
+        $this->keywords = array();
         if (is_array($keywords) === true) {
             foreach($keywords as $keyword) {
                 if (is_string($keyword) === true) {
@@ -85,6 +86,7 @@ class YesmailMasterEnvelope implements \JsonSerializable {
             }
         }
 
+        $this->seedLists = array();
         if (is_array($seedLists) === true) {
             foreach($seedLists as $seedList) {
                 if (is_string($seedList) === true) {

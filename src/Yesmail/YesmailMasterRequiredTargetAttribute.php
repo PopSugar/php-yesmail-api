@@ -80,7 +80,9 @@ class YesmailMasterRequiredTargetAttribute implements \JsonSerializable {
         $ret->name = $this->name;
 
         if(count($this->values) > 0) {
-            $ret->values = $this->values;
+            $values = array();
+            $values['values'] = $this->values;
+            $ret->values = $values;
         }
 
         $ret->nullable = $this->nullable;
