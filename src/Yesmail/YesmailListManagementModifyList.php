@@ -60,7 +60,7 @@ class YesmailListManagementModifyList implements \JsonSerializable {
             $this->subtype = NULL;
         }
 
-        if ($subscriberList instanceof YesmailListManagementSubscriberList && $subscriberList->is_valid() === true) {
+        if ($subscriberList instanceof \Yesmail\YesmailListManagementSubscriberList && $subscriberList->is_valid() === true) {
             $this->subscriberList = $subscriberList;
         } else {
             $this->subscriberList = NULL;

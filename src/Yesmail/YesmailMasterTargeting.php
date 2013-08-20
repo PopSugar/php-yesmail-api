@@ -18,7 +18,7 @@ class YesmailMasterTargeting implements \JsonSerializable {
 
         if(is_array($requiredTargetAttributes) === true && is_array($targetAttributes) === true) {
             foreach($requiredTargetAttributes as $requiredTargetAttribute) {
-                if ($requiredTargetAttribute instanceof YesmailMasterRequiredTargetAttribute) {
+                if ($requiredTargetAttribute instanceof \Yesmail\YesmailMasterRequiredTargetAttribute) {
                     $this->requiredTargetAttributes[] = $requiredTargetAttribute;
                 } else {
                     $this->requiredTargetAttributes = array();
@@ -28,7 +28,7 @@ class YesmailMasterTargeting implements \JsonSerializable {
 
             if (count($this->requiredTargetAttributes) === count($requiredTargetAttributes)) {
                 foreach($targetAttributes as $targetAttribute) {
-                    if ($targetAttribute instanceof YesmailMasterRequiredTargetAttribute) {
+                    if ($targetAttribute instanceof \Yesmail\YesmailMasterRequiredTargetAttribute) {
                         $this->targetAttributes[] = $targetAttribute;
                     } else {
                         $this->targetAttributes = array();

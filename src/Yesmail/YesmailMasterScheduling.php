@@ -13,8 +13,6 @@ namespace Yesmail;
 class YesmailMasterScheduling implements \JsonSerializable {
     public static $MasterSchedulingDeliveryFrequency = array('ONCE', 'HOURLY', 'DAILY', 'CONTINUOUSLY', 'MONTHLY', 'WEEKLY');
 
-    public static $MasterSchedulingDeliveryDateTimeFormat = 'Y/m/d H:i:s';
-
     // Required
     public $maxRecipients;
     public $priority;
@@ -69,9 +67,10 @@ class YesmailMasterScheduling implements \JsonSerializable {
             $this->priority = NULL;
         }
 
-        if (is_string($deliveryStartDateTime) === true) {
+        if (is_string($deliveryStartDateTime) === true && strlen($deliveryStartDateTime) > 0) {
             $UTC = new \DateTimeZone("UTC");
-            $date = \DateTime::createFromFormat(self::$MasterSchedulingDeliveryDateTimeFormat, $deliveryStartDateTime, $UTC);
+            $date = new \DateTime($deliveryStartDateTime, $UTC);
+
             if ($date !== false) {
                 $this->deliveryStartDateTime = $date;
             } else {
@@ -81,9 +80,9 @@ class YesmailMasterScheduling implements \JsonSerializable {
             $this->deliveryStartDateTime = NULL;
         }
 
-        if (is_string($compileStartDateTime) === true) {
+        if (is_string($compileStartDateTime) === true && strlen($compileStartDateTime) > 0) {
             $UTC = new \DateTimeZone("UTC");
-            $date = \DateTime::createFromFormat(self::$MasterSchedulingDeliveryDateTimeFormat, $compileStartDateTime, $UTC);
+            $date = new \DateTime($compileStartDateTime, $UTC);
             if ($date !== false) {
                 $this->compileStartDateTime = $date;
             } else {

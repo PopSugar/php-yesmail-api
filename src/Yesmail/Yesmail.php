@@ -121,6 +121,30 @@ class Yesmail {
     }
 
     /**
+     * Look up the id of an existing subscriber.
+     *
+     * @param array $attributes An array of attribute to look up the subscriber with
+     * @return mixed Either the subscriber id, or false if the subscriber is not found
+     * @access public
+     */
+    public function Subscriber_Get_Id($attributes) {
+        $id = false;
+        try {
+            $ret = $this->Subscriber_Lookup($attributes);
+            $uri = $ret->uri;
+            $id = (int) substr(strrchr($uri, '/'), 1);
+        } catch (\Exception $e) {
+            if( $e->getCode() === 404){
+                $id = false;
+            } else {
+                throw $e;
+            }
+        }
+
+        return $id;
+    }
+
+    /**
      * Unsubscribe an existing subscriber from a division.
      *
      * @param int $uid The ID of the user to unsubscribe
@@ -144,14 +168,35 @@ class Yesmail {
      * @access public
      */
     public function Status_Get($guid, $nowait = true) {
-
         if ($nowait === true) {
             $ret = $this->_call_api('get', "{$this->_url}/statusNoWait/$guid", array());
         } else {
-            $ret = $this->_call_api('get', "{$this->_url}/status/$guid", array());
+            $wait = true;
+            do {
+                $ret = $this->_call_api('get', "{$this->_url}/status/$guid", array());
+                switch($ret->statusCode) {
+                    case 'COMPLETED':
+                    case 'CANCELLED':
+                    case 'ERROR':
+                        $wait = false;
+                        break;
+
+                    default:
+                        $wait = false; // Don't wait forever
+                }
+            } while ( $wait === true);
         }
 
         return $ret;
+    }
+
+    /**
+     * @param string $status The status of the request
+     * @return bool True if the request is in a COMPLETED state, false otherwise
+     * @access public
+     */
+    public function Status_Is_Completed($status) {
+        return ($status === 'COMPLETED' ? true : false);
     }
 
     /**
@@ -189,8 +234,7 @@ class Yesmail {
 
         $data = $this->_package_master_elements($envelope, $targeting, $scheduling);
         if ($data !== false) {
-            $data->masterId = $masterId;
-            $ret = $this->_call_api('post', "{$this->_url}/masters", $data);
+            $ret = $this->_call_api('put', "{$this->_url}/masters/$masterId", $data);
         }
 
         return $ret;
@@ -236,6 +280,8 @@ class Yesmail {
         if (is_int($masterId) === true) {
             try {
                 $ret = $this->_call_api('get', "{$this->_url}/masters/$masterId", array());
+                $ret = $this->_Type_Safe_Yesmail_Master($ret);
+                $ret->id = (int) $masterId; // Add id to object for easy reference
             } catch (\Exception $e) {
                 if( $e->getCode() === 404){
                     $ret = false;
@@ -285,8 +331,6 @@ class Yesmail {
             $ret = $this->Master_Get((int)$ret->masterId);
         }
 
-        $ret = $this->_Type_Safe_Yesmail_Master($ret);
-
         return $ret;
     }
 
@@ -294,19 +338,31 @@ class Yesmail {
         if ($master !== false) {
             $master->scheduling->maxRecipients = (int)$master->scheduling->maxRecipients;
             $master->scheduling->priority = (int)$master->scheduling->priority;
-            $master->scheduling->compileBeforeDeliveryStart = (bool)$master->scheduling->compileBeforeDeliveryStart;
-            $master->scheduling->allowMultipleDeliveries = (bool)$master->scheduling->allowMultipleDeliveries;
-            $master->scheduling->deliverImmediately = (bool)$master->scheduling->deliverImmediately;
-            $master->scheduling->obeyDeliveryLimits = (bool)$master->scheduling->obeyDeliveryLimits;
-            $master->scheduling->repeatsUntilDisabled = (bool)$master->scheduling->repeatsUntilDisabled;
+
+            $compileBeforeDeliveryStart = $master->scheduling->compileBeforeDeliveryStart;
+            $master->scheduling->compileBeforeDeliveryStart = ($compileBeforeDeliveryStart === 'true' ? true : ($compileBeforeDeliveryStart === 'false' ? false : $compileBeforeDeliveryStart));
+
+            $allowMultipleDeliveries = $master->scheduling->allowMultipleDeliveries;
+            $master->scheduling->allowMultipleDeliveries = ($allowMultipleDeliveries === 'true' ? true : ($allowMultipleDeliveries === 'false' ? false : $allowMultipleDeliveries));
+
+            $deliverImmediately = $master->scheduling->deliverImmediately;
+            $master->scheduling->deliverImmediately = ($deliverImmediately === 'true' ? true : ($deliverImmediately === 'false' ? false : $deliverImmediately));
+
+            $obeyDeliveryLimits = $master->scheduling->obeyDeliveryLimits;
+            $master->scheduling->obeyDeliveryLimits = ($obeyDeliveryLimits === 'true' ? true : ($obeyDeliveryLimits === 'false' ? false : $obeyDeliveryLimits));
+
+            $repeatsUntilDisabled = $master->scheduling->repeatsUntilDisabled;
+            $master->scheduling->repeatsUntilDisabled = ($repeatsUntilDisabled === 'true' ? true : ($repeatsUntilDisabled === 'false' ? false : $repeatsUntilDisabled));
 
             foreach($master->targeting->requiredTargetAttributes->requiredTargetAttributes as &$requiredTargetAttribute) {
-                $requiredTargetAttribute->nullable = (bool)$requiredTargetAttribute->nullable;
+                $nullable = $requiredTargetAttribute->nullable;
+                $requiredTargetAttribute->nullable = ($nullable === 'true' ? true : ($nullable === 'false' ? false : $nullable));
             }
 
             foreach($master->targeting->targetAttributes as $targetAttribute) {
                 $targetAttribute->id = (int)$targetAttribute->id;
-                $targetAttribute->negation = (bool)$targetAttribute->negation;
+                $negation = $targetAttribute->negation;
+                $targetAttribute->negation = ($negation === 'true' ? true : ($negation === 'false' ? false : $negation));
             }
         }
 
@@ -365,6 +421,47 @@ class Yesmail {
     }
 
     /**
+     * Provides a way to preview a message by sending it to a group of email addresses, following the same semantics as
+     * the preview functionality within the Enterprise Application.
+     *
+     * @param int $masterId The id of the master to preview
+     * @param string $contentType HTML - Use HTML content in the email
+     *                            PLAIN - Use plain text content in the email.
+     *                            BOTH - Send two emails, one using HTML content and another using the plain text version.
+     *                                   If the user is configured to only accept one type of email, only one will be sent.
+     *                            USERPREFERENCE - Send either HTML or plain text email based on the preference
+     *                                             indicated by the user being targeted.
+     * @param string $distributionList The name of a distribution list to email to. Mutually exclusive with manualList
+     * @param int $userId A child element of manualList, templating of the email uses this user's attributes.
+     * @param array $emails A child element of manualList, this is a space-delimited list of email addresses.
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Master_Preview($masterId, $contentType, $distributionList, $userId, $emails) {
+        $ret = false;
+        $contentTypes = array('HTML', 'PLAIN', 'BOTH', 'USERPREFERENCE');
+
+        if (in_array($contentType, $contentTypes) === true) {
+            if (is_string($distributionList) === true xor (is_int($userId) === true && is_array($emails) === true)) {
+                $data = new \stdClass();
+                $data->contentType = $contentType;
+
+                if (is_string($distributionList) === true) {
+                    $data->distributionList = $distributionList;
+                } else {
+                    $data->manualList = new \stdClass();
+                    $data->manualList->userId = $userId;
+                    $data->manualList->emails = $emails;
+                }
+
+                $ret = $this->_call_api('post', "{$this->_url}/masters/$masterId/sendPreviews?validate", $data);
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
      * Get a list of lists given a list type
      *
      * @param string $type The type of lists to get. Should be either LISTLOADLIST or DISTRIBUTIONLIST
@@ -412,7 +509,7 @@ class Yesmail {
     public function ListManagement_Update_List($modifyList) {
         $ret = false;
 
-        if ($modifyList instanceof YesmailListManagementModifyList && $modifyList->is_valid() === true) {
+        if ($modifyList instanceof \Yesmail\YesmailListManagementModifyList && $modifyList->is_valid() === true) {
             $name = rawurlencode($modifyList->name);
             $type = rawurlencode($modifyList->type);
             $ret = $this->_call_api('put', "{$this->_url}/lists/$type/$name", $modifyList->subscriberList);
@@ -430,7 +527,7 @@ class Yesmail {
     public function ListManagement_Create_List($modifyList) {
         $ret = false;
 
-        if ($modifyList instanceof YesmailListManagementModifyList && $modifyList->is_valid() === true) {
+        if ($modifyList instanceof \Yesmail\YesmailListManagementModifyList && $modifyList->is_valid() === true) {
             $ret = $this->_call_api('post', "{$this->_url}/lists/{$modifyList->type}", $modifyList);
         }
 
@@ -449,15 +546,15 @@ class Yesmail {
     protected function _package_master_elements($envelope, $targeting, $scheduling) {
         $ret = false;
 
-        if ($envelope instanceof YesmailMasterEnvelope && $envelope->is_valid() === true) {
+        if ($envelope instanceof \Yesmail\YesmailMasterEnvelope && $envelope->is_valid() === true) {
             $ret = new \stdClass();
             $ret->envelope = $envelope;
 
-            if ($targeting instanceof YesmailMasterTargeting && $targeting->is_valid() === true) {
+            if ($targeting instanceof \Yesmail\YesmailMasterTargeting && $targeting->is_valid() === true) {
                 $ret->targeting = $targeting;
             }
 
-            if ($scheduling instanceof YesmailMasterScheduling && $scheduling->is_valid() === true) {
+            if ($scheduling instanceof \Yesmail\YesmailMasterScheduling && $scheduling->is_valid() === true) {
                 $ret->scheduling = $scheduling;
             }
         }
