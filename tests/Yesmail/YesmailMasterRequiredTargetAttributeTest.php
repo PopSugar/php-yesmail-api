@@ -9,7 +9,7 @@ class YesmailMasterRequiredTargetAttributeTest extends \PHPUnit_Framework_TestCa
 
     public function testYesmailMasterRequiredTargetAttributeJson() {
         $attribute = new YesmailMasterRequiredTargetAttribute("name", array("value1"), false);
-        $this->assertEquals('{"name":"name","values":["value1"],"nullable":false}', json_encode($attribute));
+        $this->assertEquals('{"name":"name","values":{"values":["value1"]},"nullable":false}', json_encode($attribute));
     }
 
     public function testYesmailMasterRequiredTargetAttributeValid() {

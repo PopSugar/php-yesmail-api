@@ -9,7 +9,7 @@ class YesmailMasterTargetAttributeTest extends \PHPUnit_Framework_TestCase {
 
     public function testYesmailMasterTargetAttributeJson() {
         $attribute = new YesmailMasterTargetAttribute("name", array("value1"), false, 1, 'AND', false, '');
-        $json = '{"name":"name","values":["value1"],"nullable":false,"id":1,"logicalConnectorWithNext":"AND","negation":false,"groupedWith":""}';
+        $json = '{"name":"name","values":{"values":["value1"]},"nullable":false,"id":1,"logicalConnectorWithNext":"AND","negation":false,"groupedWith":""}';
         $this->assertEquals($json, json_encode($attribute));
     }
 

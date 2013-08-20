@@ -460,6 +460,109 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         return $ret;
     }
 
+    public function testMasterStatusUpdateRequestAccepted() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('put', 'get_info'), array('', ''));
+        $mockData = $this->_getTestMasterStatusUpdateRequestAcceptedData();
+        $client->expects($this->any())
+            ->method('put')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+        $yesmail = new Yesmail($client);
+
+        $masterId = 123;
+        $status = 'ENABLED';
+        $ret = $yesmail->Master_Status_Update($masterId, $status);
+        $this->assertEquals($ret, json_decode($mockData['response']));
+    }
+
+    protected function _getTestMasterStatusUpdateRequestAcceptedData() {
+        $ret = array ('info' => array('http_code' => 202),
+                      'response' => '{
+                                        "trackingId" : "1b1dacf1-f578-4288-910a-d9a2fb0ef133",
+                                        "statusCode" : "SUBMITTED",
+                                        "statusMessage" : "Task has been accepted for processing",
+                                        "lastUpdateTime" : "2013-07-31T18:57:31.903Z",
+                                        "statusURI" : "https://API/status/1b1dacf1-f578-4288-910a-d9a2fb0ef133",
+                                        "statusNoWaitURI" : "https://API/statusNoWait/1b1dacf1-f578-4288-910a-d9a2fb0ef133",
+                                        "finalResourceURIs" : []
+                                    }'
+        );
+
+        return $ret;
+    }
+
+    public function testMasterStatusUpdateRequestMalformed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 400)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $status = 'ENABLED';
+        $yesmail->Master_Status_Update($masterId, $status);
+    }
+
+    public function testMasterStatusUpdateAuthenticationFailed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $status = 'ENABLED';
+        $yesmail->Master_Status_Update($masterId, $status);
+    }
+
+    public function testMasterStatusUpdateResourceNotFound() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $status = 'ENABLED';
+        $yesmail->Master_Status_Update($masterId, $status);
+    }
+
+    public function testMasterStatusGetSuccessful() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
+        $mockData = $this->_getTestMasterStatusGetSuccessfulData();
+        $client->expects($this->any())
+            ->method('put')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+        $yesmail = new Yesmail($client);
+
+        $masterId = 123;
+        $ret = $yesmail->Master_Status_Get($masterId);
+        $this->assertEquals($ret, json_decode($mockData['response']));
+    }
+
+    protected function _getTestMasterStatusGetSuccessfulData() {
+        $ret = array ('info' => array('http_code' => 200),
+                      'response' => '{
+                                        status: "DISABLED"
+                                    }'
+        );
+
+        return $ret;
+    }
+
+    public function testMasterStatusGetResourceNotFound() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $yesmail->Master_Status_Get($masterId);
+    }
+
     public function testMasterGetSuccessful() {
         $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
         $mockData = $this->_getTestMasterGetSuccessfulData();
@@ -507,20 +610,20 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
                                             ]
                                         },
                                         "scheduling" : {
-                                            "allowMultipleDeliveries" : "false",
-                                            "compileBeforeDeliveryStart" : "false",
+                                            "allowMultipleDeliveries" : false,
+                                            "compileBeforeDeliveryStart" : false,
                                             "compileStartDateTime" : "",
-                                            "deliverImmediately" : "false",
+                                            "deliverImmediately" : false,
                                             "deliveryStartDateTime" : "4000-01-01T00:00:00.000Z",
-                                            "maxRecipients" : "2147483647",
-                                            "obeyDeliveryLimits" : "true",
-                                            "priority" : "1",
+                                            "maxRecipients" : 2147483647,
+                                            "obeyDeliveryLimits" : true,
+                                            "priority" : 1,
                                             "deliveryFrequency" : "CONTINUALLY",
                                             "deliveryEndDateTime" : "",
                                             "deliveryPeriodHour" : "",
                                             "deliveryPeriodWeek" : "",
                                             "deliveryPeriodDayOfMonth" : "",
-                                            "repeatsUntilDisabled" : "true",
+                                            "repeatsUntilDisabled" : true,
                                             "maxMessages" : "",
                                             "deliveryRatePeriod" : ""
                                         }
@@ -528,6 +631,17 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         );
 
         return $ret;
+    }
+
+    public function testMasterGetNotFound() {
+//        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client);
+        $masterId = 123;
+        $ret = $yesmail->Master_Get($masterId);
     }
 
     public function testMasterAssetsGetSuccessful() {
@@ -729,22 +843,27 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     public function testMasterGetByNameFound() {
         $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
         $mockData = $this->_getTestMasterGetByNameFoundData();
-        $client->expects($this->any())
+        $client->expects($this->at(0))
             ->method('get')
-            ->will($this->returnValue($mockData['response']));
+            ->will($this->returnValue($mockData['response'][0]));
+        $client->expects($this->at(2)) // 2 because the index is the index of ANY method call on client, not just 'get'
+            ->method('get')
+            ->will($this->returnValue($mockData['response'][1]));
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
+
         $yesmail = new Yesmail($client);
         $masterName = 'Message 1';
         $ret = $yesmail->Master_Get_By_Name($masterName);
         $this->assertInstanceOf('stdClass', $ret);
-        $this->assertEquals($masterName, $ret->masterName);
+        $this->assertEquals($masterName, $ret->envelope->masterName);
     }
 
     protected function _getTestMasterGetByNameFoundData() {
         $ret = array ('info' => array('http_code' => 200),
-                      'response' => '{
+                      'response' => array(
+                                    '{
                                         "masters" : [
                                             {
                                                 "masterURI" : "https://API/masters/1018984",
@@ -759,7 +878,56 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
                                                 "campaignId" : ""
                                             }
                                         ]
-                                     }'
+                                     }',
+                                    '{
+                                          "envelope" : {
+                                              "masterName" : "Message 1",
+                                              "description" : "",
+                                              "campaign" : "",
+                                              "division" : "Test Division",
+                                              "encoding" : "UTF-8",
+                                              "subject" : "",
+                                              "friendlyFrom" : "POPSUGAR",
+                                              "fromName" : "from-name",
+                                              "fromDomain" : "from-domain.com",
+                                              "deliveryType":"AUTODETECT",
+                                              "keywords" : {
+                                                  "keywords" : [
+                                                  ]
+                                              },
+                                              "seedLists" : {
+                                                  "seedLists" : [
+                                                  ]
+                                              }
+                                          },
+                                          "targeting" : {
+                                              "requiredTargetAttributes" : {
+                                                  "requiredTargetAttributes" : [
+                                                  ]
+                                              },
+                                              "targetAttributes" : [
+                                              ]
+                                          },
+                                          "scheduling" : {
+                                              "allowMultipleDeliveries" : false,
+                                              "compileBeforeDeliveryStart" : false,
+                                              "compileStartDateTime" : "",
+                                              "deliverImmediately" : false,
+                                              "deliveryStartDateTime" : "4000-01-01T00:00:00.000Z",
+                                              "maxRecipients" : 2147483647,
+                                              "obeyDeliveryLimits" : true,
+                                              "priority" : 1,
+                                              "deliveryFrequency" : "CONTINUALLY",
+                                              "deliveryEndDateTime" : "",
+                                              "deliveryPeriodHour" : "",
+                                              "deliveryPeriodWeek" : "",
+                                              "deliveryPeriodDayOfMonth" : "",
+                                              "repeatsUntilDisabled" : true,
+                                              "maxMessages" : "",
+                                              "deliveryRatePeriod" : ""
+                                          }
+                                      }'
+                      )
         );
 
         return $ret;
