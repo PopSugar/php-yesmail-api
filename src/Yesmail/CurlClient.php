@@ -53,6 +53,7 @@ class CurlClient {
     public function get($url, $data) {
         curl_setopt($this->_ch, CURLOPT_CUSTOMREQUEST, 'GET');
         curl_setopt($this->_ch, CURLOPT_URL, sprintf( "%s?%s", $url, http_build_query($data, '', '&', PHP_QUERY_RFC3986)));
+        curl_setopt($this->_ch, CURLOPT_HTTPHEADER, array("Accept:application/json", "Content-Type: application/json"));
 
         return $this->_exec();
     }
@@ -101,8 +102,9 @@ class CurlClient {
      * @access public
      */
     public function delete($url, $data) {
-        curl_setopt($this->_ch, CURLOPT_URL, sprintf("%s?%s", $url, http_build_query($data)));
         curl_setopt($this->_ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($this->_ch, CURLOPT_URL, sprintf("%s?%s", $url, http_build_query($data, '', '&', PHP_QUERY_RFC3986)));
+        curl_setopt($this->_ch, CURLOPT_HTTPHEADER, array("Accept:application/json", "Content-Type: application/json"));
 
         return $this->_exec();
     }
@@ -126,7 +128,6 @@ class CurlClient {
     protected function _initialize() {
         $this->_ch = curl_init();
         $this->_last_info = FALSE;
-        curl_setopt($this->_ch, CURLOPT_HTTPHEADER, array("Accept:application/json"));
         curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->_ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($this->_ch, CURLOPT_USERPWD, "{$this->_username}:{$this->_password}");
