@@ -143,11 +143,15 @@ class YesmailMasterEnvelope implements \JsonSerializable {
         $ret->campaign = $this->campaign;
 
         if (count($this->keywords) > 0) {
-            $ret->keywords = $this->keywords;
+            $keywords = array();
+            $keywords['keywords'] = $this->keywords;
+            $ret->keywords = $keywords;
         }
 
         if (count($this->seedLists) > 0) {
-            $ret->seedLists = $this->seedLists;
+            $seedLists = array();
+            $seedLists['seedLists'] = $seedLists;
+            $ret->seedLists = $seedLists;
         }
 
         return $ret;
