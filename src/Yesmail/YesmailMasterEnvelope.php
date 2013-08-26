@@ -150,7 +150,7 @@ class YesmailMasterEnvelope implements \JsonSerializable {
 
         if (count($this->seedLists) > 0) {
             $seedLists = array();
-            $seedLists['seedLists'] = $seedLists;
+            $seedLists['seedLists'] = $this->seedLists;
             $ret->seedLists = $seedLists;
         }
 
