@@ -9,8 +9,10 @@ class YesmailMasterEnvelopeTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testYesmailMasterEnvelopeJson() {
-        $envelope = new YesmailMasterEnvelope("Test Master", "POPSUGAR", "popsugar.com", "Test Division", "UTF-8", "");
-        $json = '{"masterName":"Test Master","fromName":"POPSUGAR","fromDomain":"popsugar.com","division":"Test Division","encoding":"UTF-8","subject":"","deliveryType":"AUTODETECT","friendlyFrom":"","description":"","campaign":""}';
+        $envelope = new YesmailMasterEnvelope("Test Master", "POPSUGAR", "popsugar.com", "Test Division", "UTF-8",
+            "Test Subject", "AUTODETECT", "friendly-from", "Test Description", "Test Campaign", array("key1", "key2"),
+            array("PKTest", "TestSat"));
+        $json = '{"masterName":"Test Master","fromName":"POPSUGAR","fromDomain":"popsugar.com","division":"Test Division","encoding":"UTF-8","subject":"Test Subject","deliveryType":"AUTODETECT","friendlyFrom":"friendly-from","description":"Test Description","campaign":"Test Campaign","keywords":{"keywords":["key1","key2"]},"seedLists":{"seedLists":[]}}';
         $this->assertEquals($json, json_encode($envelope));
     }
 
