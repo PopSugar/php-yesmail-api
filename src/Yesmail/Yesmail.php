@@ -26,7 +26,7 @@ class Yesmail {
     /**
      * @var string The URL of the Yesmail API
      */
-    protected $_url = "https://services.yesmail.com/enterprise";
+    protected $_url;
 
     /**
      * @var string Yesmail wrapper version
@@ -44,8 +44,14 @@ class Yesmail {
      * @param $client object An instance of CurlClient to handle the http processing.
      * @access public
      */
-    public function __construct($client) {
+    public function __construct($client, $url = null) {
         $this->_client = $client;
+
+        if (is_null($url) === false) {
+            $this->_url = $url;
+        } else {
+            $this->_url = "https://services.yesmail.com/enterprise";
+        }
     }
 
     /**
