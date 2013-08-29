@@ -3,10 +3,11 @@ namespace Yesmail;
 
 class YesmailTest extends \PHPUnit_Framework_TestCase {
     const DIVISION = 'Test Division';
+    const YESMAIL_TEST_URL = 'http://cseqa-services.yesmail.com/enterprise';
 
     public function testCreateYesmail() {
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $this->assertInstanceOf('\Yesmail\Yesmail', $yesmail);
     }
 
@@ -19,7 +20,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
@@ -48,7 +49,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 400)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $division = self::DIVISION;
         $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
     }
@@ -64,7 +65,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
@@ -89,7 +90,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $division = self::DIVISION;
         $yesmail->Subscriber_Create('SUBSCRIBED', $division, array('email' => 'cpowell@popsugar.com'));
     }
@@ -103,7 +104,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $user_id = 123;
         $division = self::DIVISION;
@@ -136,7 +137,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 400)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $user_id = 123;
         $division = self::DIVISION;
         $allow_resubscribe = true;
@@ -148,7 +149,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     public function testSubscriberUpdateAuthenticationFailed() {
         $this->setExpectedException('Exception');
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $user_id = 123;
         $division = self::DIVISION;
         $allow_resubscribe = true;
@@ -163,7 +164,8 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);$user_id = 123;
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $user_id = 123;
         $division = self::DIVISION;
         $allow_resubscribe = true;
         $append = true;
@@ -181,7 +183,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $ret = $yesmail->Subscriber_Lookup(array('email' => 'cpowell@popsugar.com'));
 
         $this->assertEquals($ret, json_decode($mockData['response']));
@@ -208,7 +210,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Lookup(array('email' => 'junk'));
@@ -237,7 +239,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $ret = $yesmail->Subscriber_Get_Id(array('email' => 'cpowell@popsugar.com'));
         $this->assertEquals(14, $ret);
     }
@@ -257,7 +259,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $ret = $yesmail->Subscriber_Get_Id(array('email' => 'cpowell@popsugar.com'));
         $this->assertFalse($ret);
     }
@@ -272,7 +274,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Unsubscribe(-1, $division);
@@ -307,7 +309,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Unsubscribe(-10000000000, $division);
@@ -337,7 +339,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $division = self::DIVISION;
         $ret = $yesmail->Subscriber_Unsubscribe(-1, $division);
@@ -362,7 +364,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $division = self::DIVISION;
         $yesmail->Subscriber_Unsubscribe(-1, $division);
     }
@@ -378,7 +380,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $ret = $yesmail->Status_Get('a-valid-tracking-id');
 
         $this->assertEquals($ret, json_decode($mockData['response']));
@@ -417,7 +419,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     public function testStatusGetAuthenticationFailed() {
         $this->setExpectedException('Exception');
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $ret = $yesmail->Status_Get('real-status');
     }
 
@@ -425,13 +427,13 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     public function testStatusGetResourceNotFound() {
         $this->setExpectedException('Exception');
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $ret = $yesmail->Status_Get('an-invalid-tracking-id');
     }
 
     public function testMasterCreateEnvelopeNotInstanceOfYesmailMasterEnvelope() {
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $envelope = NULL;
         $targeting = $this->getMock('\Yesmail\YesmailMasterTargeting', NULL, array(), 'MyYesmailMasterTargeting', false);
         $scheduling = $this->getMock('\Yesmail\YesmailMasterScheduling', NULL, array(), 'MyYesmailMasterScheduling', false);
@@ -441,7 +443,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
 
     public function testMasterCreateEnvelopeInvalid() {
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $envelope = $this->getMock('\Yesmail\YesmailMasterEnvelope', array('is_valid'), array(), 'MyYesmailMasterEnvelope', false);
         $envelope->expects($this->any())
             ->method('is_valid')
@@ -462,7 +464,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterName = 'Test Master';
         $fromName = 'from-name';
         $fromDomain = 'from-domain.com';
@@ -501,7 +503,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $envelope = $this->getMock('\Yesmail\YesmailMasterEnvelope', array('is_valid'), array(), 'MyYesmailMasterEnvelope', false);
         $envelope->expects($this->any())
@@ -538,7 +540,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $masterId = 123;
         $status = 'ENABLED';
@@ -568,7 +570,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 400)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $status = 'ENABLED';
         $yesmail->Master_Status_Update($masterId, $status);
@@ -577,7 +579,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     public function testMasterStatusUpdateAuthenticationFailed() {
         $this->setExpectedException('Exception');
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $status = 'ENABLED';
         $yesmail->Master_Status_Update($masterId, $status);
@@ -589,7 +591,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $status = 'ENABLED';
         $yesmail->Master_Status_Update($masterId, $status);
@@ -604,7 +606,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $masterId = 123;
         $ret = $yesmail->Master_Status_Get($masterId);
@@ -627,7 +629,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $yesmail->Master_Status_Get($masterId);
     }
@@ -641,7 +643,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $ret = $yesmail->Master_Get($masterId);
         $this->assertEquals($masterId, $ret->id);
@@ -727,7 +729,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $ret = $yesmail->Master_Get($masterId);
     }
@@ -741,7 +743,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $masterId = 123;
         $ret = $yesmail->Master_Assets_Get($masterId);
@@ -768,7 +770,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 400)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $yesmail->Master_Assets_Get($masterId);
     }
@@ -776,7 +778,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     public function testMasterAssetsGetAuthenticationFailed() {
         $this->setExpectedException('Exception');
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $yesmail->Master_Assets_Get($masterId);
     }
@@ -787,7 +789,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $yesmail->Master_Assets_Get($masterId);
     }
@@ -801,7 +803,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $assetName = 'index.html';
         $assetBase64 = base64_encode('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><title>title</title></head><body>test</body></html>');
@@ -832,7 +834,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 400)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $assetName = 'index.html';
         $assetBase64 = base64_encode('not-html');
@@ -842,7 +844,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     public function testMasterAssetAddAuthenticationFailed() {
         $this->setExpectedException('Exception');
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $assetName = 'index.html';
         $assetBase64 = base64_encode('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><title>title</title></head><body>test</body></html>');
@@ -855,7 +857,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $assetName = 'index.html';
         $assetBase64 = base64_encode('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><title>title</title></head><body>test</body></html>');
@@ -872,7 +874,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $assetName = "index.html";
         $ret = $yesmail->Master_Asset_Delete($masterId, $assetName);
@@ -901,7 +903,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 400)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $assetName = "index.html";
         $yesmail->Master_Asset_Delete($masterId, $assetName);
@@ -910,7 +912,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     public function testMasterAssetDeleteAuthenticationFailed() {
         $this->setExpectedException('Exception');
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $assetName = "index.html";
         $yesmail->Master_Asset_Delete($masterId, $assetName);
@@ -922,7 +924,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $assetName = "index.html";
         $yesmail->Master_Asset_Delete($masterId, $assetName);
@@ -941,7 +943,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
 
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterName = 'Message 1';
         $ret = $yesmail->Master_Get_By_Name($masterName);
         $this->assertInstanceOf('stdClass', $ret);
@@ -1030,7 +1032,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterName = 'Message 3';
         $ret = $yesmail->Master_Get_By_Name($masterName);
         $this->assertFalse($ret);
@@ -1068,7 +1070,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $contentType = 'BOTH';
         $distributionList = 'Test Distribution List';
@@ -1103,7 +1105,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $contentType = 'BOTH';
         $distributionList = NULL;
@@ -1135,7 +1137,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 400)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $contentType = 'BOTH';
         $distributionList = 'Test Distribution List';
@@ -1147,7 +1149,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
     public function testMasterPreviewAuthenticationFailed() {
         $this->setExpectedException('Exception');
         $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $contentType = 'BOTH';
         $distributionList = 'Test Distribution List';
@@ -1162,7 +1164,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 404)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $contentType = 'BOTH';
         $distributionList = 'Test Distribution List';
@@ -1177,7 +1179,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue(array('http_code' => 409)));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $contentType = 'BOTH';
         $distributionList = 'Test Distribution List';
@@ -1195,7 +1197,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $type = 'DISTRIBUTIONLIST';
         $ret = $yesmail->ListManagement_Get_Lists($type);
@@ -1237,7 +1239,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $type = 'unknown-type';
         $ret = $yesmail->ListManagement_Get_Lists($type);
@@ -1264,7 +1266,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $name = 'TEST';
         $type = 'DISTRIBUTIONLIST';
@@ -1296,7 +1298,7 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $yesmail = new Yesmail($client);
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
 
         $name = 'TEST';
         $type = 'unknown-type';
