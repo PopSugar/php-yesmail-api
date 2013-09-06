@@ -165,6 +165,38 @@ class Yesmail {
     }
 
     /**
+     * Subscribe and send
+     *
+     * @param mixed $subscription_state Any of {"UNSUBSCRIBED", "SUBSCRIBED", "REFERRED", "DEAD", "REVIVED"} or null
+     * @param mixed $division The division display name. If specified, the subscriber will be subscribed
+     *                        to this division. If null, subscriber will not be subscribed to a division.
+     * @param array $attributes Valid values are any attributes defined in the system.
+     * @param bool $allow_resubscribe Flag to explicitly indicate you wish to resubscribe a subscriber. allowResubscribe
+     *                                must be set to true when transitioning from an UNSUBSCRIBED to SUBSCRIBED state.
+     * @param int $masterId Must be a valid master defined for the company. The master is typically set up to be in a
+     *                      disabled state.
+     * @return
+     * @access public
+     */
+    public function Subscribe_And_Send($subscription_state, $division, $attributes, $allow_resubscribe, $masterId) {
+        $data = new \stdClass();
+        $subscriber = $this->_package_subscriber_elements($subscription_state, $division, $attributes);
+
+        if (is_bool($allow_resubscribe) === true) {
+            $subscriber->allowResubscribe = $allow_resubscribe;
+        }
+        $data->subscriber = $subscriber;
+
+        $subscriberMessage = new \stdClass();
+        $subscriberMessage->masterId = $masterId;
+        $data->subscriberMessage = $subscriberMessage;
+
+        $ret = $this->_call_api('post', "{$this->_url}/composite/subscribeAndSend", $data);
+
+        return $ret;
+    }
+
+    /**
      * Get the status of an outstanding request.
      *
      * @param int $guid The trackingId of the request to get status for
