@@ -572,6 +572,34 @@ class Yesmail {
         return $ret;
     }
 
+    public function ListManagement_Is_Subscriber_In_List($name, $type, $attributes) {
+        $ret = false;
+        $subscriberId = $this->Subscriber_Get_Id($attributes);
+        if ($subscriberId !== false) {
+            $name = rawurlencode($name);
+            $type = rawurlencode($type);
+            $pageSize = 50;
+            $begin = 1;
+            $end = $pageSize;
+            $more = true;
+            while($more) {
+                $res = $this->_call_api('get', "{$this->_url}/lists/$type/$name", array('begin' => $begin, 'end' => $end));
+                foreach($res->subscriberIds as $sid) {
+                    if ($sid === $subscriberId) {
+                        $ret = true;
+                        break;
+                    }
+                }
+
+                $more = ($ret === false && count($res->subscriberIds) === $pageSize ? true : false);
+                $begin += $pageSize;
+                $end += $pageSize;
+            }
+        }
+
+        return $ret;
+    }
+
     /**
      * Package a Master's envelope, targeting, and scheduling for sending in a request
      *
