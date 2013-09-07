@@ -1316,4 +1316,53 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
 
         return $ret;
     }
+
+    public function testListManagementIsSubscriberInListFound() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
+        $mockData = $this->_getTestListManagementIsSubscriberInListFoundData();
+        $client->expects($this->at(0))
+            ->method('get')
+            ->will($this->returnValue($mockData['response'][0]));
+        $client->expects($this->at(2)) // 2 because the index is the index of ANY method call on client, not just 'get'
+            ->method('get')
+            ->will($this->returnValue($mockData['response'][1]));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $name = 'TEST';
+        $type = 'DISTRIBUTIONLIST';
+        $attributes = array('email' => 'cpowell@popsugar.com');
+        $ret = $yesmail->ListManagement_Is_Subscriber_In_List($name, $type, $attributes);
+        $this->assertTrue($ret);
+    }
+
+    protected function _getTestListManagementIsSubscriberInListFoundData() {
+        $ret = array ('info' => array('http_code' => 200),
+                      'response' => array(
+                          '{
+                               "uri" : "https://services.yesmail.com/enterprise/subscribers/14"
+                           }',
+                          '{
+                               "subscriberIds" : [ 419255, 18, 14]
+                           }'
+                      )
+        );
+
+        return $ret;
+    }
+
+    public function testListManagementIsSubscriberInListNotFound() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $name = 'TEST';
+        $type = 'DISTRIBUTIONLIST';
+        $attributes = array('email' => 'cpowell@popsugar.com');
+        $ret = $yesmail->ListManagement_Is_Subscriber_In_List($name, $type, $attributes);
+        $this->assertFalse($ret);
+    }
 }
