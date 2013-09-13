@@ -143,11 +143,11 @@ class CurlClient {
      * @throws Exception
      */
     protected function _exec() {
-        $response = curl_exec( $this->_ch );
+        $response = curl_exec($this->_ch);
         $this->_last_info = curl_getinfo($this->_ch);
         $error = curl_error( $this->_ch );
         if ( $error ) {
-            throw new Exception( $error );
+            throw new \Exception($error);
         }
 
         return $response;
