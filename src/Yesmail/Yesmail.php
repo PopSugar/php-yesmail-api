@@ -209,7 +209,6 @@ class Yesmail {
         if ($nowait === true) {
             $ret = $this->_call_api('get', "{$this->_url}/statusNoWait/$guid", array());
         } else {
-            $wait = true;
             do {
                 $ret = $this->_call_api('get', "{$this->_url}/status/$guid", array());
                 switch($ret->statusCode) {
@@ -219,8 +218,14 @@ class Yesmail {
                         $wait = false;
                         break;
 
+                    case 'INPROGRESS':
+                    case 'SUBMITTED':
+                    case 'PAUSED':
+                        $wait = true;
+                        break;
+
                     default:
-                        $wait = false; // Don't wait forever
+                        $wait = false; // Unknown status, don't wait forever
                 }
             } while ( $wait === true);
         }
