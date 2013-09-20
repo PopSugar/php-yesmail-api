@@ -406,6 +406,8 @@ class Yesmail {
                 $targetAttribute->id = (int)$targetAttribute->id;
                 $negation = $targetAttribute->negation;
                 $targetAttribute->negation = ($negation === 'true' ? true : ($negation === 'false' ? false : $negation));
+                $nullable = $targetAttribute->nullable;
+                $targetAttribute->nullable = ($nullable === 'true' ? true : ($nullable  === 'false' ? false : $nullable));
             }
         }
 

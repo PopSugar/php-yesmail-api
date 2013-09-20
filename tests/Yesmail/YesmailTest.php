@@ -662,6 +662,23 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $this->assertCount(2, $ret->envelope->seedLists->seedLists);
         $this->assertEquals('PKTest', $ret->envelope->seedLists->seedLists[0]);
         $this->assertEquals('TestSat', $ret->envelope->seedLists->seedLists[1]);
+        $this->assertCount(2, $ret->targeting->requiredTargetAttributes->requiredTargetAttributes);
+        $this->assertEquals('Subscription Status', $ret->targeting->requiredTargetAttributes->requiredTargetAttributes[0]->name);
+        $this->assertEquals('Subscribed', $ret->targeting->requiredTargetAttributes->requiredTargetAttributes[0]->values->values[0]);
+        $this->assertFalse($ret->targeting->requiredTargetAttributes->requiredTargetAttributes[0]->nullable);
+        $this->assertEquals('areacode', $ret->targeting->requiredTargetAttributes->requiredTargetAttributes[1]->name);
+        $this->assertEquals('503', $ret->targeting->requiredTargetAttributes->requiredTargetAttributes[1]->values->values[0]);
+        $this->assertEquals('541', $ret->targeting->requiredTargetAttributes->requiredTargetAttributes[1]->values->values[1]);
+        $this->assertFalse($ret->targeting->requiredTargetAttributes->requiredTargetAttributes[1]->nullable);
+        $this->assertCount(1, $ret->targeting->targetAttributes);
+        $this->assertEquals('Is Member Of List', $ret->targeting->targetAttributes[0]->name);
+        $this->assertEquals(1, $ret->targeting->targetAttributes[0]->id);
+        $this->assertCount(1, $ret->targeting->targetAttributes[0]->values->values);
+        $this->assertEquals("saleslist_1", $ret->targeting->targetAttributes[0]->values->values[0]);
+        $this->assertFalse($ret->targeting->targetAttributes[0]->negation);
+        $this->assertFalse($ret->targeting->targetAttributes[0]->nullable);
+        $this->assertEquals('', $ret->targeting->targetAttributes[0]->groupedWith);
+        $this->assertEquals('', $ret->targeting->targetAttributes[0]->logicalConnectorWithNext);
     }
 
     protected function _getTestMasterGetSuccessfulData() {
@@ -694,9 +711,41 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
                                         "targeting" : {
                                             "requiredTargetAttributes" : {
                                                 "requiredTargetAttributes" : [
+                                                    {
+                                                        "name" : "Subscription Status",
+                                                        "values" : {
+                                                            "values" : [
+                                                                "Subscribed"
+                                                            ]
+                                                        },
+                                                        "nullable":"false"
+                                                    },
+                                                    {
+                                                        "name" : "areacode",
+                                                        "values" : {
+                                                            "values":[
+                                                                "503",
+                                                                "541"
+                                                            ]
+                                                        },
+                                                        "nullable":"false"
+                                                    }
                                                 ]
                                             },
                                             "targetAttributes" : [
+                                                {
+                                                    "name": "Is Member Of List",
+                                                    "id": "1",
+                                                    "values": {
+                                                        "values": [
+                                                            "saleslist_1"
+                                                        ]
+                                                    },
+                                                    "negation": "false",
+                                                    "nullable": "false",
+                                                    "groupedWith": "",
+                                                    "logicalConnectorWithNext": ""
+                                                }
                                             ]
                                         },
                                         "scheduling" : {

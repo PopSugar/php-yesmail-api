@@ -11,7 +11,7 @@ namespace Yesmail;
  * @link https://github.com/PopSugar/php-yesmail-api
  */
 class YesmailMasterTargetAttribute extends YesmailMasterRequiredTargetAttribute {
-    public static $MasterTargetAttributeLogicalConnectorWithNext = array('AND', 'OR');
+    public static $MasterTargetAttributeLogicalConnectorWithNext = array('AND', 'OR', '');
 
     public $id;
     public $negation;
