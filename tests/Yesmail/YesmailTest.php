@@ -369,6 +369,150 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $yesmail->Subscriber_Unsubscribe(-1, $division);
     }
 
+    public function testSubscriberRetrieveIdFound() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
+        $mockData = $this->_getTestSubscriberRetrieveIdFoundData();
+        $client->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $division = self::DIVISION;
+        $ret = $yesmail->Subscriber_Retrieve(array('email' => 'cpowell@popsugar.com'), $division);
+
+        $this->assertEquals($ret, json_decode($mockData['response']));
+    }
+
+    protected function _getTestSubscriberRetrieveIdFoundData() {
+        $ret = array ('info' => array('http_code' => 200),
+                            'response' => '{
+                                "userId" : "220727",
+                                "subscriptionState" : "SUBSCRIBED",
+                                "division" : {
+                                    "value" : "Retail",
+                                    "subscribed" : "true",
+                                    "member" : "true"
+                                }
+                                ,
+                                "attributes" : {
+                                    "attributes" : [
+                                        {
+                                            "name" : "email",
+                                            "value" : "john@doe.com"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "firstName",
+                                            "value" : "John"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "lastName",
+                                            "value" : "Doe"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "postalCode",
+                                            "value" : "97209"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "prefersMobile",
+                                            "value" : "-1"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "German",
+                                            "value" : "Geburtstag!"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "Multi",
+                                            "value" : "val2|val4|val32|val51"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "dateOfPurchase430pm",
+                                            "value" : "2010-02-04 00:00:00"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "dhtmlFlag10909430pm",
+                                            "value" : "true"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "SatNumberEnum",
+                                            "value" : "value two"
+                                        }
+                                    ,
+                                        {
+                                            "name" : "JMGender",
+                                            "value" : "Male"
+                                        }
+                                    ]
+                                }
+                            }'
+        );
+
+        return $ret;
+    }
+
+    public function testSubscriberRetrieveIdNotFound() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $division = self::DIVISION;
+        $ret = $yesmail->Subscriber_Retrieve(array('email' => 'cpowell@popsugar.com'), $division);
+        $this->assertFalse($ret);
+    }
+
+    public function testSubscriberRetrieveRequestMalformed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 400)));
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $division = self::DIVISION;
+        $yesmail->Subscriber_Retrieve(array('email' => 'cpowell@popsugar.com'), $division);
+    }
+
+    public function testSubscriberRetrieveAuthenticationFailed() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', NULL, array('', ''));
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $division = self::DIVISION;
+        $yesmail->Subscriber_Retrieve(array('email' => 'cpowell@popsugar.com'), $division);
+    }
+
+    public function testSubscriberRetrieveInternalServerError() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 500)));
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $division = self::DIVISION;
+        $yesmail->Subscriber_Retrieve(array('email' => 'cpowell@popsugar.com'), $division);
+    }
+
+    public function testSubscriberRetrieveServiceTemporarilyUnavailable() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 503)));
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $division = self::DIVISION;
+        $yesmail->Subscriber_Retrieve(array('email' => 'cpowell@popsugar.com'), $division);
+    }
+
     // 200
     public function testStatusGetRequestSuccessful() {
         $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
