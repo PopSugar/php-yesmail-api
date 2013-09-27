@@ -134,7 +134,6 @@ class Yesmail {
      * @access public
      */
     public function Subscriber_Get_Id($attributes) {
-        $id = false;
         try {
             $ret = $this->Subscriber_Lookup($attributes);
             $uri = $ret->uri;
@@ -160,6 +159,24 @@ class Yesmail {
      */
     public function Subscriber_Unsubscribe($uid, $division_name) {
         $ret = $this->_call_api('delete', "{$this->_url}/subscribers/$uid", array('division' => $division_name));
+
+        return $ret;
+    }
+
+    /**
+     * Retrieve all information about a subscriber, including attributes, division subscription status, etc.
+     *
+     * @param array $attributes An array of attribute to look up the subscriber with
+     * @param mixed $division The division display name. The division from which to get the subscribers information
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Subscriber_Retrieve($attributes, $division) {
+        $ret = false;
+        $subscriberId = $this->Subscriber_Get_Id($attributes);
+        if ($subscriberId !== false) {
+            $ret = $this->_call_api('get', "{$this->_url}/subscribers/$subscriberId", array('division' => $division));
+        }
 
         return $ret;
     }
