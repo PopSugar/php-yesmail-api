@@ -79,7 +79,7 @@ class YesmailMasterTargetAttributeTest extends \PHPUnit_Framework_TestCase {
         $values = array();
         $nullable = false;
         $id = 1;
-        $logicalConnectorWithNext = 'invalid-connector';
+        $logicalConnectorWithNext = NULL;
         $negation = false;
         $groupedWith = '';
         $attribute = new YesmailMasterTargetAttribute($name, $values, $nullable, $id, $logicalConnectorWithNext, $negation, $groupedWith);
