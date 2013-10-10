@@ -381,6 +381,8 @@ class Yesmail {
                     }
                 }
 
+                // NOTE: Do not change >= to === below. Yesmail API does not always return the correct number of records. 
+                // Using >= makes us safe from their bad math. 
                 $more = ($ret === false && count($res->masters) >= $pageSize ? true : false);
                 $begin += $pageSize;
                 $end += $pageSize;
@@ -615,7 +617,9 @@ class Yesmail {
                     }
                 }
 
-                $more = ($ret === false && count($res->subscriberIds) === $pageSize ? true : false);
+                // NOTE: Do not change >= to === below. Yesmail API does not always return the correct number of records. 
+                // Using >= makes us safe from their bad math. 
+                $more = ($ret === false && count($res->subscriberIds) >= $pageSize ? true : false);
                 $begin += $pageSize;
                 $end += $pageSize;
             }
