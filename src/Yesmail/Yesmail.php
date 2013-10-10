@@ -381,7 +381,7 @@ class Yesmail {
                     }
                 }
 
-                $more = ($ret === false && count($res->masters) === $pageSize ? true : false);
+                $more = ($ret === false && count($res->masters) >= $pageSize ? true : false);
                 $begin += $pageSize;
                 $end += $pageSize;
             }
