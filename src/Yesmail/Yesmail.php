@@ -396,6 +396,23 @@ class Yesmail {
         return $ret;
     }
 
+    /**
+     * Get the number of active subscribers based on master's id
+     *
+     * @param array $master_id master's id to check the count for
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Master_Get_Count($masterId) {
+        $ret = false;
+
+        if (is_int($masterId) === true) {
+            $ret = $this->_call_api('get', "{$this->_url}/masters/$masterId/countData", array());
+        }
+
+        return $ret;
+    }
+
     protected function _Type_Safe_Yesmail_Master($master) {
         if ($master !== false) {
             $master->scheduling->maxRecipients = (int)$master->scheduling->maxRecipients;

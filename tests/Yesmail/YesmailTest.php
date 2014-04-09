@@ -1558,4 +1558,34 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $ret = $yesmail->ListManagement_Is_Subscriber_In_List($name, $type, $attributes);
         $this->assertFalse($ret);
     }
+
+    public function testMasterGetCount() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('get', 'get_info'), array('', ''));
+        $mockData = $this->_getTestMasterCountSuccessfulData();
+        $client->expects($this->at(0))
+            ->method('get')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+        $mockData = $this->_getTestMasterCountSuccessfulData();
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $masterId = 123;
+        $ret = $yesmail->Master_Get_Count($masterId);
+        $this->assertEquals($ret, json_decode($mockData['response']));
+    }
+
+    protected function _getTestMasterCountSuccessfulData() {
+        $ret = array('info' => array('http_code' => 200),
+                     'response' =>
+                     '{
+                          "status" : "COMPLETED",
+                          "lastCountTime" : "2014-03-11T04:21:21.000Z",
+                          "eligibleCount" : "325955",
+                          "message" : ""
+                      }'
+        );
+
+        return $ret;
+    }
 }
