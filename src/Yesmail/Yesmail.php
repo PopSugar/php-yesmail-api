@@ -397,9 +397,28 @@ class Yesmail {
     }
 
     /**
-     * Get the number of active subscribers based on master's id
+     * Submit the master's ID and RUN the eAPI service URL to request the the count job for a specific master
+     * Run this before doing Master_Post_Run_Count
      *
-     * @param array $master_id master's id to check the count for
+     * @param int $master_id master's id to check the count for
+     * @return mixed A JSON decoded PHP variable representing the HTTP response.
+     * @access public
+     */
+    public function Master_Post_Run_Count($masterId) {
+        $ret = false;
+
+        if (is_int($masterId) === true) {
+            $ret = $this->_call_api('post', "{$this->_url}/masters/$masterId/RUN/countData", array());
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Get the number of active subscribers based on master's id.
+     * Run this after doing Master_Post_Run_Count
+     *
+     * @param int $master_id master's id to check the count for
      * @return mixed A JSON decoded PHP variable representing the HTTP response.
      * @access public
      */
@@ -407,7 +426,12 @@ class Yesmail {
         $ret = false;
 
         if (is_int($masterId) === true) {
-            $ret = $this->_call_api('get', "{$this->_url}/masters/$masterId/countData", array());
+            do {
+                $ret = $this->_call_api('get', "{$this->_url}/masters/$masterId/countData", array());
+                // Sleep for 15 seconds so we don't keep hammering the api
+                sleep(15);
+            }
+            while (!$this->Status_Is_Completed($ret->status));
         }
 
         return $ret;
