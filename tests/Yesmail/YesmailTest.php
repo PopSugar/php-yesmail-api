@@ -1568,7 +1568,6 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
         $client->expects($this->any())
             ->method('get_info')
             ->will($this->returnValue($mockData['info']));
-        $mockData = $this->_getTestMasterCountSuccessfulData();
         $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
         $masterId = 123;
         $ret = $yesmail->Master_Get_Count($masterId);
@@ -1588,4 +1587,45 @@ class YesmailTest extends \PHPUnit_Framework_TestCase {
 
         return $ret;
     }
+
+    public function testMasterPostCount() {
+        $client = $this->getMock('\Yesmail\CurlClient', array('post', 'get_info'), array('', ''));
+        $mockData = $this->_getTestMasterPostRunCountSuccessfulData();
+        $client->expects($this->at(0))
+            ->method('post')
+            ->will($this->returnValue($mockData['response']));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue($mockData['info']));
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+
+        $masterId = 123;
+        // Start the run count
+        $ret = $yesmail->Master_Post_Run_Count($masterId);
+        $this->assertEquals($ret, json_decode($mockData['response']));
+    }
+
+    protected function _getTestMasterPostRunCountSuccessfulData() {
+        $ret = array('info' => array('http_code' => 200),
+                    'response' =>
+                    '{
+                         "status" : "SUBMITTED",
+                         "statusURI" : "https://services.yesmail.com/enterprise/masters/1018022/countData"
+                     }'
+        );
+
+        return $ret;
+    }
+
+    public function testMasterPostCountError() {
+        $this->setExpectedException('Exception');
+        $client = $this->getMock('\Yesmail\CurlClient', array('get_info'), array('', ''));
+        $client->expects($this->any())
+            ->method('get_info')
+            ->will($this->returnValue(array('http_code' => 403)));
+        $yesmail = new Yesmail($client, self::YESMAIL_TEST_URL);
+        $masterId = 123;
+        $yesmail->Master_Post_Run_Count($masterId);
+    }
+
 }
