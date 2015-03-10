@@ -354,14 +354,30 @@ class Yesmail {
         return $ret;
     }
 
+/* Get an existing Master by name
+*
+* @param int $masterName The name of the master to retrieve
+* @return mixed A JSON decoded PHP variable representing the HTTP response, or false if the master is not found
+* @access public
+*/
+    public function Master_Get_By_Name($masterName) {
+        $ret = Master_Get_Id_By_Name($masterName);
+
+        if ($ret !== false) {
+            $ret = $this->Master_Get((int)$ret);
+        }
+
+        return $ret;
+    }
+
     /**
-     * Get an existing Master by name
+     * Get an existing MasterId by name
      *
      * @param int $masterName The name of the master to retrieve
-     * @return mixed A JSON decoded PHP variable representing the HTTP response, or false if the master is not found
+     * @return mixed an int if masterId exist, or false if the master is not found
      * @access public
      */
-    public function Master_Get_By_Name($masterName) {
+    public function Master_Get_Id_By_Name($masterName) {
         $ret = false;
 
         if (is_string($masterName) === true) {
@@ -382,7 +398,7 @@ class Yesmail {
                 }
 
                 // NOTE: Do not change >= to === below. Yesmail API does not always return the correct number of records. 
-                // Using >= makes us safe from their bad math. 
+                // Using >= makes us safe from their bad math.
                 $more = ($ret === false && count($res->masters) >= $pageSize ? true : false);
                 $begin += $pageSize;
                 $end += $pageSize;
@@ -390,7 +406,7 @@ class Yesmail {
         }
 
         if ($ret !== false) {
-            $ret = $this->Master_Get((int)$ret->masterId);
+            return $ret->masterId;
         }
 
         return $ret;
