@@ -43,6 +43,14 @@ class CurlClient {
     }
 
     /**
+     * Close the CurlClient's connection
+     *
+     */
+    function __destruct() {
+        curl_close($this->_ch);
+    }
+
+    /**
      * Perform an HTTP GET
      *
      * @param string $url The URL to send the GET request to.
