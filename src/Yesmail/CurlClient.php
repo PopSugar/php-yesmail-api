@@ -138,6 +138,8 @@ class CurlClient {
         $this->_last_info = FALSE;
         curl_setopt($this->_ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->_ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($this->_ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($this->_ch, CURLOPT_CONNECTTIMEOUT, 60);
         curl_setopt($this->_ch, CURLOPT_USERPWD, "{$this->_username}:{$this->_password}");
 
         return;
